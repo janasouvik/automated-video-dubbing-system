@@ -1,0 +1,49 @@
+# ─── Web Framework ────────────────────────────────────────────────────────────────
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+python-multipart==0.0.9
+
+# ─── Database ─────────────────────────────────────────────────────────────────────
+sqlalchemy==2.0.30
+asyncpg==0.29.0
+alembic==1.13.1
+
+# ─── Configuration ────────────────────────────────────────────────────────────────
+pydantic==2.7.1
+pydantic-settings==2.2.1
+python-dotenv==1.0.1
+
+# ─── Video Download ───────────────────────────────────────────────────────────────
+yt-dlp
+
+# ─── Transcription ────────────────────────────────────────────────────────────────
+openai-whisper
+torch>=2.0.0
+# torch is needed by whisper; install CPU-only version to save space if no GPU:
+# pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+# ─── Translation ──────────────────────────────────────────────────────────────────
+transformers==4.41.1
+sentencepiece==0.2.0
+sacremoses==0.1.1
+# accelerate for faster HF inference (optional but recommended)
+accelerate==0.30.0
+
+# ─── TTS ──────────────────────────────────────────────────────────────────────────
+edge-tts>=7.2.8
+
+# ─── Audio Processing ─────────────────────────────────────────────────────────────
+pydub==0.25.1
+soundfile==0.12.1
+librosa==0.10.2
+numpy==1.26.4
+
+# ─── HTTP Client (for IndicTrans2 REST if needed) ─────────────────────────────────
+httpx==0.27.0
+
+# ─── Utilities ────────────────────────────────────────────────────────────────────
+tqdm==4.66.4
+aiofiles==23.2.1
+python-jose==3.3.0
+passlib[bcrypt]==1.7.4
+greenlet
