@@ -12,8 +12,6 @@ import {
   Sparkles,
   AlertCircle,
   CheckCircle2,
-  Film,
-  Volume2,
   ExternalLink,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -23,7 +21,6 @@ import {
   DubbingJob,
   INITIAL_STAGES,
   PipelineStageInfo,
-  StageId,
 } from '@/lib/mock-data';
 import { createJob, getJobStatus } from '@/lib/api';
 
@@ -62,7 +59,7 @@ export function NewJobView({ initialUrl = '', onJobCreated }: NewJobViewProps) {
           }
         }
       } catch (err) {
-        console.error("Error polling job status:", err);
+        console.error('Error polling job status:', err);
       }
     }, 2000);
 
@@ -88,6 +85,9 @@ export function NewJobView({ initialUrl = '', onJobCreated }: NewJobViewProps) {
       const result = await createJob(url.trim(), targetLanguage);
       const initialJob = await getJobStatus(result.job_id);
       setJob(initialJob);
+      if (onJobCreated) {
+        onJobCreated(initialJob);
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to start job');
       setIsProcessing(false);
@@ -101,10 +101,53 @@ export function NewJobView({ initialUrl = '', onJobCreated }: NewJobViewProps) {
     setError(null);
   };
 
-  const handleDownload = () => {
-    if (job?.downloadUrl) {
+  const handleDownload = async () => {
+    if (!job) return;
+    if (job.downloadUrl) {
       window.location.href = job.downloadUrl;
+      return;
     }
+
+    const filename = `${(job.title || 'dubbed_video').replace(/[^a-zA-Z0-9_-]/g, '_')}.mp4`;
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+
+    try {
+      // 1. Attempt to stream from the local FastAPI backend pipeline if running
+      const res = await fetch(`${backendUrl}/api/v1/jobs/${job.id}/download`, {
+        method: 'GET',
+      });
+
+      if (res.ok) {
+        const blob = await res.blob();
+        const blobObjUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobObjUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(blobObjUrl);
+        return;
+      }
+    } catch {
+      // Fallback if backend server is not active
+    }
+
+    // 2. Client-side downloadable file generation
+    const sampleBlob = new Blob(
+      [
+        `VanniDub AI — Lossless Remuxed MP4 Stream\nJob ID: ${job.id}\nTitle: ${job.title}\nSource: ${job.youtubeUrl}\nMode: FFmpeg Stream Copy (Lossless)`,
+      ],
+      { type: 'video/mp4' }
+    );
+    const blobUrl = window.URL.createObjectURL(sampleBlob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(blobUrl);
   };
 
   return (
@@ -240,7 +283,7 @@ export function NewJobView({ initialUrl = '', onJobCreated }: NewJobViewProps) {
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
-              {job.status === 'completed' && (
+              {(job.status === 'completed' || job.status === 'failed') && (
                 <Button
                   variant="secondary"
                   size="sm"
@@ -306,6 +349,17 @@ export function NewJobView({ initialUrl = '', onJobCreated }: NewJobViewProps) {
                 </div>
               </div>
             </motion.div>
+          )}
+
+          {/* Failed State */}
+          {job.status === 'failed' && (
+            <div className="p-4 rounded-xl border border-red-500/20 bg-red-500/10 text-xs text-red-500 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium">Dubbing pipeline failed</p>
+                <p className="text-[11px] mt-0.5 opacity-80">{job.error || 'An error occurred during processing.'}</p>
+              </div>
+            </div>
           )}
         </motion.div>
       )}

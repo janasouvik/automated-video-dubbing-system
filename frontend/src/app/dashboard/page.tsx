@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState, Suspense, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Sidebar } from '@/components/dashboard/Sidebar';
 import { TopBar } from '@/components/dashboard/TopBar';
 import { NewJobView } from '@/components/dashboard/NewJobView';
 import { JobDetailView } from '@/components/dashboard/JobDetailView';
 import { DubbingJob } from '@/lib/mock-data';
-import { listJobs } from '@/lib/api';
 
 function DashboardContent() {
   const searchParams = useSearchParams();
@@ -17,25 +16,50 @@ function DashboardContent() {
   const [selectedJob, setSelectedJob] = useState<DubbingJob | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isLoadingJobs, setIsLoadingJobs] = useState(true);
 
+  // Fetch only this authenticated user's saved jobs from the server
   useEffect(() => {
-    async function loadJobs() {
+    let isMounted = true;
+    async function loadUserJobs() {
       try {
-        const data = await listJobs();
-        setJobs(data);
+        const res = await fetch('/api/jobs');
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && data?.jobs) {
+            setJobs(data.jobs);
+          }
+        }
       } catch (err) {
-        console.error('Failed to list jobs', err);
+        console.error('Error fetching user jobs:', err);
+      } finally {
+        if (isMounted) setIsLoadingJobs(false);
       }
     }
-    loadJobs();
+
+    loadUserJobs();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  const handleJobCreated = (newJob: DubbingJob) => {
+  const handleJobCreated = async (newJob: DubbingJob) => {
+    // 1. Update React state immediately
     setJobs((prev) => [newJob, ...prev.filter((j) => j.id !== newJob.id)]);
+
+    // 2. Persist to server for this user
+    try {
+      await fetch('/api/jobs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newJob),
+      });
+    } catch (err) {
+      console.error('Error persisting job:', err);
+    }
   };
 
   const handleToggleSidebar = () => {
-    // If mobile, toggle open drawer; if desktop, toggle collapse
     if (typeof window !== 'undefined' && window.innerWidth < 768) {
       setSidebarOpen((prev) => !prev);
     } else {
