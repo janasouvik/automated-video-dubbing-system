@@ -6,6 +6,19 @@ An automated end-to-end pipeline that takes a YouTube video URL as input and gen
 
 The system accepts a YouTube URL, processes the video through a series of AI models for transcription, translation, and text-to-speech synthesis, and then remixes the final audio back into the original video seamlessly without re-encoding the video track. The process runs locally, providing progress updates as it completes each stage.
 
+## Repository Structure
+
+```
+.
+├── backend/                # FastAPI backend & ML pipeline
+│   ├── app/                # Core application (models, database, services, API)
+│   ├── alembic/            # Database migration scripts
+│   ├── data/               # Local data storage for jobs & temporary files
+│   ├── scripts/            # Helper scripts (benchmarks, downloading models)
+│   └── tests/              # Unit & API test suites
+└── frontend/               # Vite + TypeScript + React frontend SPA
+```
+
 ## Pipeline Steps & Tools Used
 
 ### 1. Fetch & Transcribe
@@ -33,25 +46,105 @@ The new audio is swapped in, and the final video is shipped.
   - **Speaker Diarization:** Integration with `pyannote.audio` to segment audio by speaker.
   - **Voice Cloning:** Utilizing free voice-cloning models like Coqui XTTS for character-accurate dubbing.
 
-## How to Run
+---
 
-This project consists of a backend processing pipeline and a frontend UI.
+## Prerequisites
 
-### 1. Start the Backend
-The backend runs the FastAPI server and the video processing pipeline.
-```bash
-cd backend
-pip install -r requirements.txt
-make run
-```
-*(Ensure you have `ffmpeg` installed on your system path).*
+Before setting up the project, ensure you have the following installed on your system:
+- **Python** (v3.10 or higher)
+- **Node.js** (v18 or higher) & **npm**
+- **FFmpeg** & **FFprobe** (must be accessible on your system path)
+- **PostgreSQL** database running locally or accessible remotely
 
-### 2. Start the Frontend
+---
+
+## How to Run & Set Up
+
+### 1. Set Up the Backend
+
+The backend runs the FastAPI server, interacts with PostgreSQL, and manages the video processing pipeline.
+
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+
+2. Create a virtual environment and activate it:
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate  # On Windows, use `.venv\Scripts\activate`
+   ```
+
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Configure the environment variables:
+   - Copy `.env.example` to `.env`:
+     ```bash
+     cp .env.example .env
+     ```
+   - Open `.env` and set your `DATABASE_URL` (e.g., `postgresql+asyncpg://postgres:password@localhost:5432/video_dubbing`).
+
+5. Run database migrations:
+   ```bash
+   make migrate
+   ```
+
+6. Start the development server:
+   ```bash
+   make dev
+   ```
+
+### 2. Set Up the Frontend
+
 The frontend provides the interface to input the YouTube URL and track job progress.
+
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the Vite development server:
+   ```bash
+   npm run dev
+   ```
+
+Once both servers are running, open the frontend URL displayed in your terminal (usually `http://localhost:5173`) in your browser. Paste a YouTube link, and watch the progress in real-time as the system automatically dubs your video!
+
+---
+
+## Running with Docker
+
+Alternatively, you can run the backend and its services using Docker:
+
+1. Build the Docker image:
+   ```bash
+   make docker-build
+   ```
+
+2. Spin up the containers (database & backend):
+   ```bash
+   make docker-up
+   ```
+
+To stop the containers:
 ```bash
-cd frontend
-npm install
-npm run dev
+make docker-down
 ```
 
-Once both servers are running, open the frontend URL in your browser, paste a YouTube link, and watch the progress in real-time as the system automatically dubs your video!
+---
+
+## Testing
+
+To run the unit and API test suites, run the following in the backend directory:
+```bash
+make test
+```
+

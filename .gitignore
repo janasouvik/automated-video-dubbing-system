@@ -1,6 +1,43 @@
+# OS-specific files
+.DS_Store
+Thumbs.db
+db.sqlite3
+
+# Node/Frontend
 node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.oxlintrc.json
+
+# Python/Backend virtual environments
+venv/
+.venv/
+env/
+.env
+backend/venv/
+backend/.venv/
+backend/env/
+backend/.env
+
+# Python build and cache artifacts
 __pycache__/
 *.pyc
-.env
-data/jobs/
-venv/
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Application generated files and folders
+backend/data/jobs/
+backend/models_cache/
+backend/logs/
+backend/test_e2e/
+backend/test_job/
+backend/test_working/
+backend/test_dl/
