@@ -24,17 +24,20 @@
   .dark {
     --color-accent: #3499FD;
     --color-accent-hover: #5CB0FF;
-    --color-accent-soft: #162434;
-    --color-bg: #000000;
-    --color-bg-gradient: none;
-    --color-surface: #0a0a0a;
-    --color-surface-hover: #141414;
-    --color-border: #222222;
-    --color-text: #FFFFFF;
-    --color-text-muted: #A1A1AA;
+    --color-accent-soft: #12283e;
+    --color-bg: #070D14;
+    --color-bg-gradient: radial-gradient(circle at 15% 15%, #0B223D 0%, transparent 45%),
+                         radial-gradient(circle at 85% 20%, #0E2847 0%, transparent 40%),
+                         radial-gradient(circle at 50% 85%, #091D34 0%, transparent 50%),
+                         linear-gradient(180deg, #070D14 0%, #0B131D 40%, #060B11 100%);
+    --color-surface: #0E131B;
+    --color-surface-hover: #151C26;
+    --color-border: #1C2634;
+    --color-text: #F8FAFC;
+    --color-text-muted: #94A3B8;
     --color-input-bg: #EAECEF;
     --color-input-text: #0F1419;
-    --color-input-border: #444444;
+    --color-input-border: #334155;
   }
 
   * {
@@ -53,15 +56,6 @@
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
     transition: background 0.3s ease, color 0.2s ease;
-  }
-
-  [data-theme="dark"] body,
-  .dark body,
-  html[data-theme="dark"],
-  html.dark {
-    background: #000000 !important;
-    background-color: #000000 !important;
-    background-image: none !important;
   }
 
   h1, h2, h3, h4, h5, h6 {

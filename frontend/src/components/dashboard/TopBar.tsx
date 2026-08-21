@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { PanelLeft, Home, ChevronRight, Sparkles } from 'lucide-react';
+import { PanelLeft, Home, ChevronRight } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface TopBarProps {
@@ -47,12 +47,8 @@ export function TopBar({
         </div>
       </div>
 
-      {/* Right side: Pipeline mode indicator + ThemeToggle */}
+      {/* Right side: ThemeToggle */}
       <div className="flex items-center gap-3">
-        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--color-accent-soft)] text-[var(--color-accent)] text-xs font-normal border border-[var(--color-accent)]/20">
-          <Sparkles className="w-3 h-3" />
-          <span>Local Engine Active</span>
-        </div>
         <ThemeToggle />
       </div>
     </header>

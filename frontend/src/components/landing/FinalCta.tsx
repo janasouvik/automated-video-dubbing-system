@@ -11,9 +11,9 @@ export function FinalCta() {
     <section className="py-20 relative overflow-hidden">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="relative rounded-3xl border border-[var(--color-border)] bg-gradient-to-b from-[var(--color-surface)] to-[var(--color-surface-hover)] p-10 md:p-16 shadow-xl shadow-black/5 overflow-hidden">
-          {/* Subtle Glow (Light Mode only) */}
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-[var(--color-accent)]/15 rounded-full blur-3xl pointer-events-none dark:hidden" />
-          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-[var(--color-accent)]/10 rounded-full blur-3xl pointer-events-none dark:hidden" />
+          {/* Subtle Glow */}
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-[var(--color-accent)]/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-[var(--color-accent)]/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 max-w-2xl mx-auto">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent-soft)] text-[var(--color-accent)] text-xs font-normal mb-6">

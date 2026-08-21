@@ -16,8 +16,8 @@ interface AuthLayoutProps {
 export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col justify-between bg-transparent px-4 py-8 relative overflow-hidden">
-      {/* Background Accent (Light Mode only) */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-[var(--color-accent)]/10 blur-[100px] rounded-full pointer-events-none -z-10 dark:hidden" />
+      {/* Background Accent */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-[var(--color-accent)]/10 blur-[100px] rounded-full pointer-events-none -z-10" />
 
       {/* Top Bar */}
       <div className="max-w-6xl w-full mx-auto flex items-center justify-between">
