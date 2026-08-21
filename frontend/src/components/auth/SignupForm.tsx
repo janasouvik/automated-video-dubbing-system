@@ -64,29 +64,48 @@ export function SignupForm() {
     setErrors({});
 
     try {
-      const result = await signIn('credentials', {
-        name: name.trim(),
+      // 1. Register user via backend API
+      const registerRes = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          password,
+        }),
+      });
+
+      const registerData = await registerRes.json();
+
+      if (!registerRes.ok) {
+        setErrors({ general: registerData.error || 'Failed to create account. Please try again.' });
+        setIsLoading(false);
+        return;
+      }
+
+      // 2. Sign in the newly created user
+      const signInResult = await signIn('credentials', {
         email: email.trim(),
         password,
         redirect: false,
       });
 
-      if (result?.error) {
-        setErrors({ general: 'Failed to create account. Please try again.' });
+      if (signInResult?.error) {
+        setErrors({ general: 'Account created, but sign in failed. Please log in manually.' });
         setIsLoading(false);
       } else {
         router.push('/dashboard');
         router.refresh();
       }
     } catch {
-      setErrors({ general: 'An unexpected error occurred. Please try again.' });
+      setErrors({ general: 'An unexpected network error occurred. Please try again.' });
       setIsLoading(false);
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* General Error */}
+      {/* General Error Banner */}
       {errors.general && (
         <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 flex items-start gap-2.5 text-xs text-red-500">
           <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />

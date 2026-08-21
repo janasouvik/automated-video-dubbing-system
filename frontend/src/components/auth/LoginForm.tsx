@@ -50,7 +50,7 @@ export function LoginForm() {
 
       if (result?.error) {
         setErrors({
-          general: 'Invalid email or password. Password must be at least 6 characters.',
+          general: 'Invalid email or password. If you do not have an account yet, please sign up first.',
         });
         setIsLoading(false);
       } else {

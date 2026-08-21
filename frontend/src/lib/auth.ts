@@ -1,48 +1,35 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import Google from 'next-auth/providers/google';
+import { verifyUser } from '@/lib/userStore';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
-    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
-      ? [
-          Google({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-          }),
-        ]
-      : []),
     Credentials({
       id: 'credentials',
       name: 'Credentials',
       credentials: {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
-        name: { label: 'Name', type: 'text' },
       },
       authorize: async (credentials) => {
-        if (!credentials?.email) {
+        if (!credentials?.email || !credentials?.password) {
           return null;
         }
 
         const email = String(credentials.email).trim().toLowerCase();
-        const password = String(credentials.password || '');
-        const providedName = credentials.name ? String(credentials.name).trim() : '';
+        const password = String(credentials.password);
 
-        // Validate password unless it's a simulated OAuth sign-in
-        if (password && password.length < 6 && !email.includes('google')) {
+        // Verify credentials against the registered users store
+        const verifiedUser = verifyUser(email, password);
+        if (!verifiedUser) {
+          // Account does not exist or password mismatch
           return null;
         }
 
-        const namePart = email.split('@')[0];
-        const formattedName =
-          providedName ||
-          namePart.charAt(0).toUpperCase() + namePart.slice(1).replace(/[._]/g, ' ');
-
         return {
-          id: 'usr_' + Math.random().toString(36).substring(2, 9),
-          name: formattedName || 'Creator',
-          email: email,
+          id: verifiedUser.id,
+          name: verifiedUser.name,
+          email: verifiedUser.email,
         };
       },
     }),
