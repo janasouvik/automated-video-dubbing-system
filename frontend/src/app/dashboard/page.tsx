@@ -12,21 +12,23 @@ function DashboardContent() {
   const searchParams = useSearchParams();
   const initialUrl = searchParams.get('url') || '';
 
+  // Initial state starts strictly at [] for new users
   const [jobs, setJobs] = useState<DubbingJob[]>([]);
   const [selectedJob, setSelectedJob] = useState<DubbingJob | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isLoadingJobs, setIsLoadingJobs] = useState(true);
 
-  // Fetch only this authenticated user's saved jobs from the server
+  // Fetch only this authenticated user's isolated jobs from the server
   useEffect(() => {
     let isMounted = true;
+
     async function loadUserJobs() {
       try {
-        const res = await fetch('/api/jobs');
+        const res = await fetch('/api/jobs', { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
-          if (isMounted && data?.jobs) {
+          if (isMounted && Array.isArray(data?.jobs)) {
             setJobs(data.jobs);
           }
         }
@@ -69,7 +71,7 @@ function DashboardContent() {
 
   return (
     <div className="flex min-h-screen bg-transparent">
-      {/* Claude.ai-style Collapsible Left Sidebar */}
+      {/* Collapsible Left Sidebar */}
       <Sidebar
         jobs={jobs}
         activeJobId={selectedJob?.id || null}

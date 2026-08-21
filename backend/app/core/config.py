@@ -25,7 +25,6 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "change-me-in-production"
     APP_TITLE: str = "Automated Video Dubbing System"
     APP_VERSION: str = "1.0.0"
-    FRONTEND_URL: str = "http://localhost:3000"
 
     # ── Database ─────────────────────────────────────────────────────────────────
     DATABASE_URL: str = "postgresql+asyncpg://postgres:041319@localhost:5432/video_dubbing"
@@ -71,3 +70,11 @@ settings = Settings()
 # Ensure runtime directories exist on import
 settings.DATA_DIR.mkdir(parents=True, exist_ok=True)
 settings.MODELS_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+settings.DATA_DIR.mkdir(parents=True, exist_ok=True)
+settings.MODELS_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+# Add ffmpeg directory to PATH for subprocesses (including whisper audio loader)
+if settings.FFMPEG_PATH and os.path.exists(settings.FFMPEG_PATH):
+    ffmpeg_dir = os.path.dirname(settings.FFMPEG_PATH)
+    if ffmpeg_dir not in os.environ.get("PATH", ""):
+        os.environ["PATH"] = ffmpeg_dir + os.pathsep + os.environ.get("PATH", "")

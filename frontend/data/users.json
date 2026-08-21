@@ -12,5 +12,19 @@
     "email": "imssouvik@gmail.com",
     "passwordHash": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
     "createdAt": "2026-08-21T17:29:12.347Z"
+  },
+  {
+    "id": "usr_274c53af",
+    "name": "Sayan",
+    "email": "codefiles900@gmail.com",
+    "passwordHash": "635c3d319ab6362405b5b7379b58a3bc9084f22070889f11bacc68baa280612b",
+    "createdAt": "2026-08-21T18:19:09.612Z"
+  },
+  {
+    "id": "usr_78b92bde",
+    "name": "Alice NewUser",
+    "email": "alice_isolated@test.com",
+    "passwordHash": "a109e36947ad56de1dca1cc49f0ef8ac9ad9a7b1aa0df41fb3c4cb73c1ff01ea",
+    "createdAt": "2026-08-21T18:42:45.678Z"
   }
 ]

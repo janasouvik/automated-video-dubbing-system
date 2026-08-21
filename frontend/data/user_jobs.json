@@ -1,1 +1,249 @@
-{}
+{
+    "codefiles900@gmail.com": [
+        {
+            "id": "e8b9b1ae-55d8-45e4-8cb9-d0cd7cad474a",
+            "title": "Dubbed Video — e8b9b1ae",
+            "youtubeUrl": "ttps://youtu.be/SpMyb5s8Mk0?si=V-d0xp3-lptiMRkr",
+            "targetLanguage": "en",
+            "targetLanguageLabel": "English (US)",
+            "status": "failed",
+            "currentStageId": "fetch",
+            "progressPercent": 0,
+            "createdAt": "2026-08-21T18:29:03.017664Z",
+            "completedAt": null,
+            "stages": [
+                {
+                    "id": "fetch",
+                    "name": "Audio Extraction",
+                    "tool": "yt-dlp",
+                    "description": "Downloading audio stream from YouTube container",
+                    "status": "failed",
+                    "progressPercent": 0,
+                    "message": "Failed at stage 'download'."
+                },
+                {
+                    "id": "transcribe",
+                    "name": "Speech Transcription",
+                    "tool": "OpenAI Whisper",
+                    "description": "Generating millisecond-aligned text transcript",
+                    "status": "pending",
+                    "progressPercent": 0,
+                    "message": "Queued"
+                },
+                {
+                    "id": "translate",
+                    "name": "Contextual Translation",
+                    "tool": "IndicTrans2 / NLLB",
+                    "description": "Translating to conversational English idioms",
+                    "status": "pending",
+                    "progressPercent": 0,
+                    "message": "Queued"
+                },
+                {
+                    "id": "synthesize",
+                    "name": "Speech Synthesis (TTS)",
+                    "tool": "edge-tts Neural",
+                    "description": "Synthesizing voiceover with duration time-stretching",
+                    "status": "pending",
+                    "progressPercent": 0,
+                    "message": "Queued"
+                },
+                {
+                    "id": "remux",
+                    "name": "Lossless Remuxing",
+                    "tool": "FFmpeg Stream Copy",
+                    "description": "Muxing synthesized English audio into original video",
+                    "status": "pending",
+                    "progressPercent": 0,
+                    "message": "Queued"
+                }
+            ],
+            "sourceLanguage": "Unknown",
+            "error": "[download] yt-dlp failed: [generic] Extracting URL: ttps://youtu.be/SpMyb5s8Mk0?si=V-d0xp3-lptiMRkr\n[generic] SpMyb5s8Mk0?si=V-d0xp3-lptiMRkr: Downloading webpage\nERROR: Unable to handle request: Unsupported url scheme: \"ttps\" (requests, urllib, websockets)"
+        },
+        {
+            "id": "a3c91fe6-733f-4b32-a27c-f9e24ee66a16",
+            "title": "Dubbed Video — a3c91fe6",
+            "youtubeUrl": "ttps://youtu.be/SpMyb5s8Mk0?si=V-d0xp3-lptiMRkr",
+            "targetLanguage": "en",
+            "targetLanguageLabel": "English (US)",
+            "status": "failed",
+            "currentStageId": "fetch",
+            "progressPercent": 0,
+            "createdAt": "2026-08-21T18:26:36.064644Z",
+            "completedAt": null,
+            "stages": [
+                {
+                    "id": "fetch",
+                    "name": "Audio Extraction",
+                    "tool": "yt-dlp",
+                    "description": "Downloading audio stream from YouTube container",
+                    "status": "failed",
+                    "progressPercent": 0,
+                    "message": "Failed at stage 'download'."
+                },
+                {
+                    "id": "transcribe",
+                    "name": "Speech Transcription",
+                    "tool": "OpenAI Whisper",
+                    "description": "Generating millisecond-aligned text transcript",
+                    "status": "pending",
+                    "progressPercent": 0,
+                    "message": "Queued"
+                },
+                {
+                    "id": "translate",
+                    "name": "Contextual Translation",
+                    "tool": "IndicTrans2 / NLLB",
+                    "description": "Translating to conversational English idioms",
+                    "status": "pending",
+                    "progressPercent": 0,
+                    "message": "Queued"
+                },
+                {
+                    "id": "synthesize",
+                    "name": "Speech Synthesis (TTS)",
+                    "tool": "edge-tts Neural",
+                    "description": "Synthesizing voiceover with duration time-stretching",
+                    "status": "pending",
+                    "progressPercent": 0,
+                    "message": "Queued"
+                },
+                {
+                    "id": "remux",
+                    "name": "Lossless Remuxing",
+                    "tool": "FFmpeg Stream Copy",
+                    "description": "Muxing synthesized English audio into original video",
+                    "status": "pending",
+                    "progressPercent": 0,
+                    "message": "Queued"
+                }
+            ],
+            "sourceLanguage": "Unknown",
+            "error": "[download] yt-dlp failed: [generic] Extracting URL: ttps://youtu.be/SpMyb5s8Mk0?si=V-d0xp3-lptiMRkr\n[generic] SpMyb5s8Mk0?si=V-d0xp3-lptiMRkr: Downloading webpage\nERROR: Unable to handle request: Unsupported url scheme: \"ttps\" (requests, urllib, websockets)"
+        },
+        {
+            "id": "04bd7f38-00fe-454f-9873-6aec75365de6",
+            "title": "Dubbed Video — 04bd7f38",
+            "youtubeUrl": "ttps://youtu.be/SpMyb5s8Mk0?si=V-d0xp3-lptiMRkr",
+            "targetLanguage": "en",
+            "targetLanguageLabel": "English (US)",
+            "status": "failed",
+            "currentStageId": "fetch",
+            "progressPercent": 0,
+            "createdAt": "2026-08-21T18:26:11.032417Z",
+            "completedAt": null,
+            "stages": [
+                {
+                    "id": "fetch",
+                    "name": "Audio Extraction",
+                    "tool": "yt-dlp",
+                    "description": "Downloading audio stream from YouTube container",
+                    "status": "failed",
+                    "progressPercent": 0,
+                    "message": "Failed at stage 'download'."
+                },
+                {
+                    "id": "transcribe",
+                    "name": "Speech Transcription",
+                    "tool": "OpenAI Whisper",
+                    "description": "Generating millisecond-aligned text transcript",
+                    "status": "pending",
+                    "progressPercent": 0,
+                    "message": "Queued"
+                },
+                {
+                    "id": "translate",
+                    "name": "Contextual Translation",
+                    "tool": "IndicTrans2 / NLLB",
+                    "description": "Translating to conversational English idioms",
+                    "status": "pending",
+                    "progressPercent": 0,
+                    "message": "Queued"
+                },
+                {
+                    "id": "synthesize",
+                    "name": "Speech Synthesis (TTS)",
+                    "tool": "edge-tts Neural",
+                    "description": "Synthesizing voiceover with duration time-stretching",
+                    "status": "pending",
+                    "progressPercent": 0,
+                    "message": "Queued"
+                },
+                {
+                    "id": "remux",
+                    "name": "Lossless Remuxing",
+                    "tool": "FFmpeg Stream Copy",
+                    "description": "Muxing synthesized English audio into original video",
+                    "status": "pending",
+                    "progressPercent": 0,
+                    "message": "Queued"
+                }
+            ],
+            "sourceLanguage": "Unknown",
+            "error": "[download] yt-dlp failed: [generic] Extracting URL: ttps://youtu.be/SpMyb5s8Mk0?si=V-d0xp3-lptiMRkr\n[generic] SpMyb5s8Mk0?si=V-d0xp3-lptiMRkr: Downloading webpage\nERROR: Unable to handle request: Unsupported url scheme: \"ttps\" (requests, urllib, websockets)"
+        },
+        {
+            "id": "3a0406aa-551d-4c0c-9a76-9a5869926462",
+            "title": "Dubbed Video — 3a0406aa",
+            "youtubeUrl": "https://youtu.be/SpMyb5s8Mk0?si=V-d0xp3-lptiMRkr",
+            "targetLanguage": "en",
+            "targetLanguageLabel": "English (US)",
+            "status": "failed",
+            "currentStageId": "synthesize",
+            "progressPercent": 61,
+            "createdAt": "2026-08-21T18:19:23.975475Z",
+            "completedAt": null,
+            "stages": [
+                {
+                    "id": "fetch",
+                    "name": "Audio Extraction",
+                    "tool": "yt-dlp",
+                    "description": "Downloading audio stream from YouTube container",
+                    "status": "completed",
+                    "progressPercent": 100,
+                    "message": "Done"
+                },
+                {
+                    "id": "transcribe",
+                    "name": "Speech Transcription",
+                    "tool": "OpenAI Whisper",
+                    "description": "Generating millisecond-aligned text transcript",
+                    "status": "completed",
+                    "progressPercent": 100,
+                    "message": "Done"
+                },
+                {
+                    "id": "translate",
+                    "name": "Contextual Translation",
+                    "tool": "IndicTrans2 / NLLB",
+                    "description": "Translating to conversational English idioms",
+                    "status": "completed",
+                    "progressPercent": 100,
+                    "message": "Done"
+                },
+                {
+                    "id": "synthesize",
+                    "name": "Speech Synthesis (TTS)",
+                    "tool": "edge-tts Neural",
+                    "description": "Synthesizing voiceover with duration time-stretching",
+                    "status": "failed",
+                    "progressPercent": 5,
+                    "message": "Failed at stage 'synthesize'."
+                },
+                {
+                    "id": "remux",
+                    "name": "Lossless Remuxing",
+                    "tool": "FFmpeg Stream Copy",
+                    "description": "Muxing synthesized English audio into original video",
+                    "status": "pending",
+                    "progressPercent": 0,
+                    "message": "Queued"
+                }
+            ],
+            "videoDuration": "0:20",
+            "sourceLanguage": "hi",
+            "error": "[synthesize] TTS failed for segment 5: edge-tts failed for segment 5: No audio was received. Please verify that your parameters are correct."
+        }
+    ]
+}

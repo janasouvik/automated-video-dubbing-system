@@ -50,13 +50,13 @@ export function NewJobView({ initialUrl = '', onJobCreated }: NewJobViewProps) {
       try {
         const updatedJob = await getJobStatus(job.id);
         setJob(updatedJob);
+        if (onJobCreated) {
+          onJobCreated(updatedJob);
+        }
 
         if (updatedJob.status === 'completed' || updatedJob.status === 'failed') {
           clearInterval(interval);
           setIsProcessing(false);
-          if (onJobCreated) {
-            onJobCreated(updatedJob);
-          }
         }
       } catch (err) {
         console.error('Error polling job status:', err);
