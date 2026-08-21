@@ -99,7 +99,7 @@ The backend runs the FastAPI server, interacts with PostgreSQL, and manages the 
 
 ### 2. Set Up the Frontend
 
-The frontend provides the interface to input the YouTube URL and track job progress.
+The frontend is a modern Next.js (App Router) application built with TypeScript, Tailwind CSS, NextAuth.js, Framer Motion, and next-themes.
 
 1. Navigate to the frontend directory:
    ```bash
@@ -111,12 +111,12 @@ The frontend provides the interface to input the YouTube URL and track job progr
    npm install
    ```
 
-3. Start the Vite development server:
+3. Start the Next.js development server:
    ```bash
    npm run dev
    ```
 
-Once both servers are running, open the frontend URL displayed in your terminal (usually `http://localhost:5173`) in your browser. Paste a YouTube link, and watch the progress in real-time as the system automatically dubs your video!
+Open [http://localhost:3000](http://localhost:3000) in your browser. You can explore the landing page, sign in/up, and launch live video dubbing jobs with real-time stage telemetry on the dashboard!
 
 ---
 
