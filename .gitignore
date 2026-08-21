@@ -4,6 +4,10 @@ Thumbs.db
 db.sqlite3
 *.pem
 
+# Next.js auto-generated agent files
+frontend/AGENTS.md
+frontend/CLAUDE.md
+
 # Node/Frontend General
 node_modules/
 npm-debug.log*
