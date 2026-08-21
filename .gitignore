@@ -2,26 +2,51 @@
 .DS_Store
 Thumbs.db
 db.sqlite3
+*.pem
 
-# Node/Frontend
+# Node/Frontend General
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Frontend Specific
 frontend/node_modules/
 frontend/dist/
+frontend/build/
 frontend/.next/
 frontend/out/
-frontend/.env
-frontend/.env.local
 frontend/.oxlintrc.json
+frontend/coverage/
+frontend/.vercel/
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
 
-# Python/Backend virtual environments
+# Yarn
+frontend/.pnp
+frontend/.pnp.*
+frontend/.yarn/*
+!frontend/.yarn/patches
+!frontend/.yarn/plugins
+!frontend/.yarn/releases
+!frontend/.yarn/versions
+
+# Environment variables
+.env
+.env.*
+!.env.example
 venv/
 .venv/
 env/
-.env
 backend/venv/
 backend/.venv/
 backend/env/
 backend/.env
+frontend/.env
+frontend/.env.local
+frontend/.env.*
+!frontend/.env.example
 
 # Python build and cache artifacts
 __pycache__/
