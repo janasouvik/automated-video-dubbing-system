@@ -25,6 +25,7 @@ import {
   PipelineStageInfo,
   StageId,
 } from '@/lib/mock-data';
+import { createJob, getJobStatus } from '@/lib/api';
 
 interface NewJobViewProps {
   initialUrl?: string;
@@ -44,116 +45,31 @@ export function NewJobView({ initialUrl = '', onJobCreated }: NewJobViewProps) {
     }
   }, [initialUrl, job, isProcessing]);
 
-  // Stage simulation step progression
+  // Poll real job status from backend
   useEffect(() => {
-    if (!isProcessing || !job) return;
+    if (!isProcessing || !job || job.status === 'completed' || job.status === 'failed') return;
 
-    const stageSequence: {
-      stageId: StageId;
-      durationMs: number;
-      messages: string[];
-    }[] = [
-      {
-        stageId: 'fetch',
-        durationMs: 2500,
-        messages: ['Connecting to yt-dlp...', 'Extracting raw audio stream...', 'Isolating visual track...'],
-      },
-      {
-        stageId: 'transcribe',
-        durationMs: 3200,
-        messages: ['Loading Whisper model...', 'Detecting language...', 'Generating timestamped segments...'],
-      },
-      {
-        stageId: 'translate',
-        durationMs: 2800,
-        messages: ['Running IndicTrans2 / NLLB...', 'Aligning contextual phrasing...', 'Refining sentence bounds...'],
-      },
-      {
-        stageId: 'synthesize',
-        durationMs: 3500,
-        messages: ['Generating neural speech via edge-tts...', 'Applying time-stretching...', 'Balancing vocal pitch...'],
-      },
-      {
-        stageId: 'remux',
-        durationMs: 2200,
-        messages: ['Executing FFmpeg stream copy...', 'Swapping audio channel in MP4...', 'Finalizing output container...'],
-      },
-    ];
+    const interval = setInterval(async () => {
+      try {
+        const updatedJob = await getJobStatus(job.id);
+        setJob(updatedJob);
 
-    let currentStepIdx = 0;
-    let messageIdx = 0;
-
-    const interval = setInterval(() => {
-      setJob((prevJob) => {
-        if (!prevJob) return null;
-
-        const currentConfig = stageSequence[currentStepIdx];
-        if (!currentConfig) {
-          // Completed all stages!
+        if (updatedJob.status === 'completed' || updatedJob.status === 'failed') {
           clearInterval(interval);
           setIsProcessing(false);
-          const completedJob: DubbingJob = {
-            ...prevJob,
-            status: 'completed',
-            progressPercent: 100,
-            completedAt: new Date().toISOString(),
-            stages: prevJob.stages.map((s) => ({
-              ...s,
-              status: 'completed',
-              progressPercent: 100,
-              message: 'Finished successfully',
-            })),
-          };
           if (onJobCreated) {
-            onJobCreated(completedJob);
+            onJobCreated(updatedJob);
           }
-          return completedJob;
         }
-
-        const currentStageId = currentConfig.stageId;
-        const currentMsg = currentConfig.messages[messageIdx % currentConfig.messages.length];
-        messageIdx++;
-
-        // Update stages
-        const updatedStages = prevJob.stages.map((s, idx) => {
-          if (idx < currentStepIdx) {
-            return { ...s, status: 'completed' as const, progressPercent: 100, message: 'Done' };
-          }
-          if (idx === currentStepIdx) {
-            const stepProgress = Math.min(95, 20 + messageIdx * 25);
-            return {
-              ...s,
-              status: 'in_progress' as const,
-              progressPercent: stepProgress,
-              message: currentMsg,
-            };
-          }
-          return { ...s, status: 'pending' as const, progressPercent: 0, message: 'Queued' };
-        });
-
-        const overallPercent = Math.min(
-          99,
-          Math.round(((currentStepIdx + messageIdx / 4) / stageSequence.length) * 100)
-        );
-
-        return {
-          ...prevJob,
-          currentStageId,
-          progressPercent: overallPercent,
-          stages: updatedStages,
-        };
-      });
-
-      if (messageIdx >= stageSequence[currentStepIdx]?.messages.length) {
-        currentStepIdx++;
-        messageIdx = 0;
+      } catch (err) {
+        console.error("Error polling job status:", err);
       }
-    }, 800);
+    }, 2000);
 
     return () => clearInterval(interval);
-  }, [isProcessing, job?.id, onJobCreated]);
+  }, [isProcessing, job?.id, job?.status, onJobCreated]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url.trim()) {
       setError('Please provide a valid YouTube URL');
@@ -168,29 +84,14 @@ export function NewJobView({ initialUrl = '', onJobCreated }: NewJobViewProps) {
     setError(null);
     setIsProcessing(true);
 
-    // Extract title or mock
-    const newJob: DubbingJob = {
-      id: 'job-' + Math.floor(1000 + Math.random() * 9000),
-      title: 'YouTube Dubbed Video — ' + (url.split('v=')[1]?.slice(0, 8) || 'Project'),
-      youtubeUrl: url.trim(),
-      targetLanguage,
-      targetLanguageLabel: targetLanguage === 'en' ? 'English (US)' : 'Other',
-      status: 'in_progress',
-      currentStageId: 'fetch',
-      progressPercent: 5,
-      createdAt: new Date().toISOString(),
-      videoDuration: '3:45',
-      sourceLanguage: 'Detected Audio',
-      downloadUrl: '#download-video',
-      stages: INITIAL_STAGES.map((s, idx) => ({
-        ...s,
-        status: idx === 0 ? 'in_progress' : 'pending',
-        progressPercent: idx === 0 ? 10 : 0,
-        message: idx === 0 ? 'Connecting to yt-dlp extractor...' : undefined,
-      })),
-    };
-
-    setJob(newJob);
+    try {
+      const result = await createJob(url.trim(), targetLanguage);
+      const initialJob = await getJobStatus(result.job_id);
+      setJob(initialJob);
+    } catch (err: any) {
+      setError(err.message || 'Failed to start job');
+      setIsProcessing(false);
+    }
   };
 
   const handleReset = () => {
@@ -201,8 +102,9 @@ export function NewJobView({ initialUrl = '', onJobCreated }: NewJobViewProps) {
   };
 
   const handleDownload = () => {
-    // TODO: Wire to backend /api/v1/jobs/{job.id}/download
-    alert('Dubbed video download initiated! In production, this pulls the lossless remuxed MP4 from the backend.');
+    if (job?.downloadUrl) {
+      window.location.href = job.downloadUrl;
+    }
   };
 
   return (

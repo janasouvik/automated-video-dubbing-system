@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "change-me-in-production"
     APP_TITLE: str = "Automated Video Dubbing System"
     APP_VERSION: str = "1.0.0"
+    FRONTEND_URL: str = "http://localhost:3000"
 
     # ── Database ─────────────────────────────────────────────────────────────────
     DATABASE_URL: str = "postgresql+asyncpg://postgres:041319@localhost:5432/video_dubbing"

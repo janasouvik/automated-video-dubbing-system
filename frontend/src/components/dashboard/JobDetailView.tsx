@@ -24,8 +24,9 @@ interface JobDetailViewProps {
 
 export function JobDetailView({ job, onNewJob }: JobDetailViewProps) {
   const handleDownload = () => {
-    // TODO: Wire to backend download endpoint /api/v1/jobs/{job.id}/download
-    alert(`Downloading dubbed video: ${job.title}`);
+    if (job?.downloadUrl) {
+      window.location.href = job.downloadUrl;
+    }
   };
 
   return (

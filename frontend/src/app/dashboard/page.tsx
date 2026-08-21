@@ -1,21 +1,34 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, Suspense, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Sidebar } from '@/components/dashboard/Sidebar';
 import { TopBar } from '@/components/dashboard/TopBar';
 import { NewJobView } from '@/components/dashboard/NewJobView';
 import { JobDetailView } from '@/components/dashboard/JobDetailView';
-import { MOCK_HISTORY_JOBS, DubbingJob } from '@/lib/mock-data';
+import { DubbingJob } from '@/lib/mock-data';
+import { listJobs } from '@/lib/api';
 
 function DashboardContent() {
   const searchParams = useSearchParams();
   const initialUrl = searchParams.get('url') || '';
 
-  const [jobs, setJobs] = useState<DubbingJob[]>(MOCK_HISTORY_JOBS);
+  const [jobs, setJobs] = useState<DubbingJob[]>([]);
   const [selectedJob, setSelectedJob] = useState<DubbingJob | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  useEffect(() => {
+    async function loadJobs() {
+      try {
+        const data = await listJobs();
+        setJobs(data);
+      } catch (err) {
+        console.error('Failed to list jobs', err);
+      }
+    }
+    loadJobs();
+  }, []);
 
   const handleJobCreated = (newJob: DubbingJob) => {
     setJobs((prev) => [newJob, ...prev.filter((j) => j.id !== newJob.id)]);
