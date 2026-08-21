@@ -198,4 +198,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🧑💻 Authors / Contact
 - **Souvik Jana** - [@janasouvik](https://github.com/janasouvik)
+- **Sayan Maji** - [@Sayanmaji0506](https://github.com/Sayanmaji0506)
 - **Repository Link:** [https://github.com/janasouvik/automated-video-dubbing-system](https://github.com/janasouvik/automated-video-dubbing-system)
