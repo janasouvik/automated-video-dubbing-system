@@ -18,6 +18,7 @@ class JobCreateRequest(BaseModel):
     """Body for POST /jobs — submit a new dubbing job."""
     youtube_url: str = Field(..., description="Full YouTube video URL to dub.")
     target_language: str = Field(default="en", description="Target language (fixed to 'en' per assignment).")
+    user_email: Optional[str] = Field(default=None, description="Optional user email to associate job with user in DB.")
 
     @field_validator("youtube_url")
     @classmethod
@@ -70,12 +71,18 @@ class JobStatusResponse(BaseModel):
 
 
 class JobListItem(BaseModel):
-    """Compact job summary for GET /jobs list."""
+    """Summary of a job stored in PostgreSQL."""
     job_id: str
     youtube_url: str
     status: JobStatus
     progress_percent: int
+    current_stage_message: Optional[str] = None
+    source_language: Optional[str] = None
+    target_language: str = "en"
+    video_duration_sec: Optional[float] = None
+    error_message: Optional[str] = None
     created_at: datetime
+    completed_at: Optional[datetime] = None
 
     model_config = {"from_attributes": True}
 

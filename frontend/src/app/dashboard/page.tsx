@@ -45,20 +45,8 @@ function DashboardContent() {
     };
   }, []);
 
-  const handleJobCreated = async (newJob: DubbingJob) => {
-    // 1. Update React state immediately
+  const handleJobCreated = (newJob: DubbingJob) => {
     setJobs((prev) => [newJob, ...prev.filter((j) => j.id !== newJob.id)]);
-
-    // 2. Persist to server for this user
-    try {
-      await fetch('/api/jobs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newJob),
-      });
-    } catch (err) {
-      console.error('Error persisting job:', err);
-    }
   };
 
   const handleToggleSidebar = () => {

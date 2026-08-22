@@ -2,11 +2,15 @@ import { DubbingJob, INITIAL_STAGES, PipelineStageInfo, StageStatus } from './mo
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
-export async function createJob(url: string, targetLanguage: string = 'en') {
+export async function createJob(url: string, targetLanguage: string = 'en', userEmail?: string) {
   const res = await fetch(`${API_BASE_URL}/jobs`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ youtube_url: url, target_language: targetLanguage }),
+    body: JSON.stringify({
+      youtube_url: url,
+      target_language: targetLanguage,
+      user_email: userEmail || undefined,
+    }),
   });
   if (!res.ok) {
     const error = await res.json();
@@ -15,15 +19,18 @@ export async function createJob(url: string, targetLanguage: string = 'en') {
   return res.json();
 }
 
-export async function listJobs(limit = 50, offset = 0) {
-  const res = await fetch(`${API_BASE_URL}/jobs?limit=${limit}&offset=${offset}`);
+export async function listJobs(userEmail?: string, limit = 50, offset = 0) {
+  const url = userEmail
+    ? `${API_BASE_URL}/jobs?user_email=${encodeURIComponent(userEmail)}&limit=${limit}&offset=${offset}`
+    : `${API_BASE_URL}/jobs?limit=${limit}&offset=${offset}`;
+  const res = await fetch(url, { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch jobs');
   const data = await res.json();
   return data.jobs.map((job: any) => mapToDubbingJob(job));
 }
 
 export async function getJobStatus(jobId: string): Promise<DubbingJob> {
-  const res = await fetch(`${API_BASE_URL}/jobs/${jobId}`);
+  const res = await fetch(`${API_BASE_URL}/jobs/${jobId}`, { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch job status');
   const data = await res.json();
   return mapToDubbingJob(data);
@@ -36,7 +43,7 @@ export async function deleteJob(jobId: string) {
   if (!res.ok) throw new Error('Failed to delete job');
 }
 
-function mapToDubbingJob(backendJob: any): DubbingJob {
+export function mapToDubbingJob(backendJob: any): DubbingJob {
   const p = backendJob.progress_percent || 0;
   
   let currentStageId: 'fetch' | 'transcribe' | 'translate' | 'synthesize' | 'remux' = 'fetch';

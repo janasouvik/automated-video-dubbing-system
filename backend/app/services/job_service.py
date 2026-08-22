@@ -21,9 +21,11 @@ class JobService:
     def __init__(self, db: AsyncSession) -> None:
         self._repo = JobRepository(db)
 
-    async def create_job(self, youtube_url: str, target_language: str = "en") -> JobCreatedResponse:
+    async def create_job(
+        self, youtube_url: str, target_language: str = "en", user_email: Optional[str] = None
+    ) -> JobCreatedResponse:
         """Create a new dubbing job and return its initial status."""
-        job = await self._repo.create_job(youtube_url, target_language)
+        job = await self._repo.create_job(youtube_url, target_language, user_email=user_email)
         return JobCreatedResponse(
             job_id=str(job.id),
             status=job.status,
@@ -63,9 +65,11 @@ class JobService:
             raise JobNotCompletedError(job_id, job.status.value)
         return job.final_video_path
 
-    async def list_jobs(self, limit: int = 50, offset: int = 0) -> JobListResponse:
-        """Return a paginated list of all jobs."""
-        jobs, total = await self._repo.list_jobs(limit=limit, offset=offset)
+    async def list_jobs(
+        self, user_email: Optional[str] = None, limit: int = 50, offset: int = 0
+    ) -> JobListResponse:
+        """Return a paginated list of jobs for a user or globally."""
+        jobs, total = await self._repo.list_jobs(user_email=user_email, limit=limit, offset=offset)
         return JobListResponse(
             total=total,
             jobs=[
@@ -74,7 +78,13 @@ class JobService:
                     youtube_url=j.youtube_url,
                     status=j.status,
                     progress_percent=j.progress_percent,
+                    current_stage_message=j.current_stage_message,
+                    source_language=j.source_language,
+                    target_language=j.target_language,
+                    video_duration_sec=float(j.video_duration_sec) if j.video_duration_sec else None,
+                    error_message=j.error_message,
                     created_at=j.created_at,
+                    completed_at=j.completed_at,
                 )
                 for j in jobs
             ],

@@ -19,7 +19,10 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Import the metadata for all models so Alembic can detect changes
+from app.core.config import settings  # noqa: E402
 from app.db.base import Base  # noqa: E402
+
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 target_metadata = Base.metadata
 
 

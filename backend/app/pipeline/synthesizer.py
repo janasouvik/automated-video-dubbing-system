@@ -106,7 +106,7 @@ async def _synthesize_one(
                 target_duration_sec=seg.end - seg.start,
                 time_stretch_factor=1.0,
                 voice_id="silence",
-                engine_used="silence",
+                engine_used="edge_tts",
             )
 
         used_voice = voice

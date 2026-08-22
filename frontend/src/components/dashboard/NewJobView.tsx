@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import {
   Video,
@@ -30,6 +31,7 @@ interface NewJobViewProps {
 }
 
 export function NewJobView({ initialUrl = '', onJobCreated }: NewJobViewProps) {
+  const { data: session } = useSession();
   const [url, setUrl] = useState(initialUrl);
   const [targetLanguage, setTargetLanguage] = useState('en');
   const [error, setError] = useState<string | null>(null);
@@ -82,7 +84,8 @@ export function NewJobView({ initialUrl = '', onJobCreated }: NewJobViewProps) {
     setIsProcessing(true);
 
     try {
-      const result = await createJob(url.trim(), targetLanguage);
+      const userEmail = session?.user?.email || undefined;
+      const result = await createJob(url.trim(), targetLanguage, userEmail);
       const initialJob = await getJobStatus(result.job_id);
       setJob(initialJob);
       if (onJobCreated) {

@@ -48,9 +48,9 @@ async def create_job(
     to track progress. Download the result from `GET /jobs/{job_id}/download`
     once status is `completed`.
     """
-    response = await svc.create_job(body.youtube_url, body.target_language)
+    response = await svc.create_job(body.youtube_url, body.target_language, user_email=body.user_email)
     job_id = response.job_id
-    logger.info("Job created via API", extra={"job_id": job_id, "url": body.youtube_url})
+    logger.info("Job created via API", extra={"job_id": job_id, "url": body.youtube_url, "user_email": body.user_email})
 
     # Launch the pipeline as a background task (non-blocking)
     background_tasks.add_task(_run_pipeline_bg, job_id)
@@ -69,15 +69,16 @@ async def _run_pipeline_bg(job_id: str) -> None:
 @router.get(
     "",
     response_model=JobListResponse,
-    summary="List all dubbing jobs",
+    summary="List dubbing jobs from PostgreSQL",
 )
 async def list_jobs(
+    user_email: str | None = Query(default=None, description="Filter jobs for specific user in PostgreSQL"),
     limit: int = Query(default=50, ge=1, le=200, description="Max number of jobs to return"),
     offset: int = Query(default=0, ge=0, description="Pagination offset"),
     svc: JobService = Depends(get_job_service),
 ) -> JobListResponse:
-    """Return a paginated list of all dubbing jobs ordered by creation time (newest first)."""
-    return await svc.list_jobs(limit=limit, offset=offset)
+    """Return a paginated list of dubbing jobs from PostgreSQL ordered by creation time (newest first)."""
+    return await svc.list_jobs(user_email=user_email, limit=limit, offset=offset)
 
 
 @router.get(

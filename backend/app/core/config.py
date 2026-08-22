@@ -4,6 +4,7 @@ All configuration is centralised here; never import raw os.environ elsewhere.
 """
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Literal, Optional
 
@@ -25,9 +26,10 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "change-me-in-production"
     APP_TITLE: str = "Automated Video Dubbing System"
     APP_VERSION: str = "1.0.0"
+    FRONTEND_URL: str = "http://localhost:3000"
 
     # ── Database ─────────────────────────────────────────────────────────────────
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:041319@localhost:5432/video_dubbing"
+    DATABASE_URL: str = "postgresql+asyncpg://postgres:740789@localhost:5432/video_dubbing"
 
     # ── Storage ──────────────────────────────────────────────────────────────────
     DATA_DIR: Path = Path("./data/jobs")

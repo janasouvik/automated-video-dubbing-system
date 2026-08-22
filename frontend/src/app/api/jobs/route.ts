@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-import { getJobsForUser, saveJobForUser, deleteJobForUser } from '@/lib/jobStore';
+import { mapToDubbingJob } from '@/lib/api';
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
 
 export async function GET() {
   try {
@@ -9,10 +11,24 @@ export async function GET() {
       return NextResponse.json({ jobs: [] }, { status: 200 });
     }
 
-    const jobs = getJobsForUser(session.user.email);
-    return NextResponse.json({ jobs: jobs || [] });
+    const email = session.user.email;
+    const res = await fetch(
+      `${BACKEND_URL}/api/v1/jobs?user_email=${encodeURIComponent(email)}&limit=100`,
+      { cache: 'no-store' }
+    );
+
+    if (!res.ok) {
+      console.error('FastAPI returned error fetching jobs:', res.status);
+      return NextResponse.json({ jobs: [] }, { status: 200 });
+    }
+
+    const data = await res.json();
+    const rawJobs = Array.isArray(data?.jobs) ? data.jobs : [];
+    const jobs = rawJobs.map((j: any) => mapToDubbingJob(j));
+
+    return NextResponse.json({ jobs });
   } catch (error) {
-    console.error('Failed to fetch user jobs:', error);
+    console.error('Failed to fetch user jobs from PostgreSQL backend:', error);
     return NextResponse.json({ error: 'Failed to fetch jobs', jobs: [] }, { status: 500 });
   }
 }
@@ -25,35 +41,32 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    if (!body?.id || !body?.youtubeUrl) {
-      return NextResponse.json({ error: 'Invalid job data' }, { status: 400 });
+    const youtubeUrl = body?.youtubeUrl || body?.youtube_url;
+    const targetLanguage = body?.targetLanguage || body?.target_language || 'en';
+
+    if (!youtubeUrl) {
+      return NextResponse.json({ error: 'Missing youtubeUrl' }, { status: 400 });
     }
 
-    const savedJob = saveJobForUser(session.user.email, body);
-    return NextResponse.json({ success: true, job: savedJob }, { status: 201 });
+    const res = await fetch(`${BACKEND_URL}/api/v1/jobs`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        youtube_url: youtubeUrl,
+        target_language: targetLanguage,
+        user_email: session.user.email,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      return NextResponse.json({ error: err.detail || 'Failed to create job' }, { status: res.status });
+    }
+
+    const created = await res.json();
+    return NextResponse.json({ success: true, job_id: created.job_id }, { status: 201 });
   } catch (error) {
-    console.error('Failed to save user job:', error);
+    console.error('Failed to create job in PostgreSQL backend:', error);
     return NextResponse.json({ error: 'Failed to save job' }, { status: 500 });
-  }
-}
-
-export async function DELETE(request: Request) {
-  try {
-    const session = await auth();
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { searchParams } = new URL(request.url);
-    const jobId = searchParams.get('id');
-    if (!jobId) {
-      return NextResponse.json({ error: 'Missing job id' }, { status: 400 });
-    }
-
-    const success = deleteJobForUser(session.user.email, jobId);
-    return NextResponse.json({ success });
-  } catch (error) {
-    console.error('Failed to delete job:', error);
-    return NextResponse.json({ error: 'Failed to delete job' }, { status: 500 });
   }
 }

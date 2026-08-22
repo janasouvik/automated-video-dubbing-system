@@ -12,7 +12,7 @@ from sqlalchemy import select, func, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.db_models import (
-    Job, JobOutput, JobStageEvent, Speaker,
+    Job, JobOutput, JobStageEvent, Speaker, User,
     TranscriptSegment as DBTranscriptSegment,
     TranslationSegment as DBTranslationSegment,
     TTSSegment as DBTTSSegment,
@@ -32,10 +32,35 @@ class JobRepository:
 
     # ── Job CRUD ──────────────────────────────────────────────────────────────────
 
-    async def create_job(self, youtube_url: str, target_language: str = "en") -> Job:
-        """Insert a new job row in 'queued' status."""
+    async def get_or_create_user(self, email: str) -> User:
+        """Fetch user by email or create if not existing in PostgreSQL."""
+        normalized = email.strip().lower()
+        result = await self._db.execute(select(User).where(User.email == normalized))
+        user = result.scalar_one_or_none()
+        if user is None:
+            user = User(
+                id=uuid.uuid4(),
+                email=normalized,
+                hashed_password="",
+                is_active=True,
+            )
+            self._db.add(user)
+            await self._db.commit()
+            await self._db.refresh(user)
+        return user
+
+    async def create_job(
+        self, youtube_url: str, target_language: str = "en", user_email: Optional[str] = None
+    ) -> Job:
+        """Insert a new job row in 'queued' status, associated with user in PostgreSQL."""
+        user_id = None
+        if user_email:
+            user = await self.get_or_create_user(user_email)
+            user_id = user.id
+
         job = Job(
             id=uuid.uuid4(),
+            user_id=user_id,
             youtube_url=youtube_url,
             target_language=target_language,
             status=JobStatusEnum.queued,
@@ -44,7 +69,7 @@ class JobRepository:
         self._db.add(job)
         await self._db.commit()
         await self._db.refresh(job)
-        logger.info("Job created", extra={"job_id": str(job.id)})
+        logger.info("Job created", extra={"job_id": str(job.id), "user_id": str(user_id) if user_id else None})
         return job
 
     async def get_job(self, job_id: str) -> Optional[Job]:
@@ -54,8 +79,30 @@ class JobRepository:
         )
         return result.scalar_one_or_none()
 
-    async def list_jobs(self, limit: int = 50, offset: int = 0) -> tuple[list[Job], int]:
-        """Return a page of jobs and the total count."""
+    async def list_jobs(
+        self, user_email: Optional[str] = None, limit: int = 50, offset: int = 0
+    ) -> tuple[list[Job], int]:
+        """Return a page of jobs and the total count from PostgreSQL, filtered by user if provided."""
+        if user_email:
+            normalized = user_email.strip().lower()
+            user_result = await self._db.execute(select(User).where(User.email == normalized))
+            user = user_result.scalar_one_or_none()
+            if user is None:
+                return [], 0
+
+            count_stmt = select(func.count()).select_from(Job).where(Job.user_id == user.id)
+            total = (await self._db.execute(count_stmt)).scalar_one()
+
+            query = (
+                select(Job)
+                .where(Job.user_id == user.id)
+                .order_by(Job.created_at.desc())
+                .limit(limit)
+                .offset(offset)
+            )
+            jobs_result = await self._db.execute(query)
+            return list(jobs_result.scalars().all()), total
+
         total_result = await self._db.execute(select(func.count()).select_from(Job))
         total = total_result.scalar_one()
         jobs_result = await self._db.execute(
